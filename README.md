@@ -1,3 +1,3 @@
 # WishBox
-iOS App for wish list
+iOS App for your worthy wish list
 Give it a try!
