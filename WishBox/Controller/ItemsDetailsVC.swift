@@ -18,6 +18,7 @@ class ItemsDetailsVC: UIViewController, UITextFieldDelegate, UIPickerViewDataSou
     @IBOutlet var thumgImg: UIImageView!
     
     var stores = [Store]()
+    var itemTypes = [ItemType]()
     var itemToEdit: Item?
     var imagePicker: UIImagePickerController!
     
@@ -36,25 +37,13 @@ class ItemsDetailsVC: UIViewController, UITextFieldDelegate, UIPickerViewDataSou
 
         
 //        collectionView?.keyboardDismissMode = .interactive
-
-
-                let store = Store(context: context)
-                store.name = "Edeka"
-                let store2 = Store(context: context)
-                store2.name = "Tesla Dealership"
-                let store3 = Store(context: context)
-                store3.name = "BMW carrier"
-                let store4 = Store(context: context)
-                store4.name = "REWE"
-                let store5 = Store(context: context)
-                store5.name = "Amazon"
-                let store6 = Store(context: context)
-                store6.name = "Media Markt"
         
-                ad.saveContext()
+        
+        getItemTypes()
+        generateTestData()
         getStores()
         
-        if itemToEdit != nil {
+        if itemToEdit != nil  {
             loadItemData()
         }
         
@@ -72,22 +61,34 @@ class ItemsDetailsVC: UIViewController, UITextFieldDelegate, UIPickerViewDataSou
         titleField.resignFirstResponder()
         detailsField.resignFirstResponder()
         priceField.resignFirstResponder()
+        
         self.view.endEditing(true)
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
+        return 2
     }
     
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return stores.count
-    }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        
-        let store = stores[row]
-        return store.name
-        
+        if component == 0 {
+            let store = stores[row]
+            return store.name
+        } else if component == 1 {
+            let itemType = itemTypes[row]
+            return itemType.type
+        } else {
+            return "tttttt" //error
+        }
+    }
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if component == 0 {
+            return stores.count
+        } else if component == 1 {
+            return itemTypes.count
+        } else {
+            return -1 //throw error
+        }
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -107,6 +108,19 @@ class ItemsDetailsVC: UIViewController, UITextFieldDelegate, UIPickerViewDataSou
         } catch {
             
             // handle the error
+        }
+    }
+    
+    func getItemTypes() {
+        
+        let fetchRequest: NSFetchRequest<ItemType> = ItemType.fetchRequest()
+        
+        do {
+            self.itemTypes = try context.fetch(fetchRequest)
+            self.storePicker.reloadAllComponents()
+        } catch {
+            
+            //handle the error
         }
     }
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -148,8 +162,10 @@ class ItemsDetailsVC: UIViewController, UITextFieldDelegate, UIPickerViewDataSou
             item.details = details
             
         }
-        
+     
         item.toStore = stores[storePicker.selectedRow(inComponent: 0)]
+        
+        item.toItemType = itemTypes[storePicker.selectedRow(inComponent: 1)]
         
         ad.saveContext()
         
@@ -181,6 +197,17 @@ class ItemsDetailsVC: UIViewController, UITextFieldDelegate, UIPickerViewDataSou
                     
                 } while (index < stores.count)
             }
+            
+            if let itemType = item.toItemType {
+                var index = 0
+                repeat {
+                    let iT = itemTypes[index]
+                    if iT.type == itemType.type {
+                        storePicker.selectRow(index, inComponent: 1, animated: false)
+                    }
+                    index += 1
+                } while (index < itemTypes.count)
+            }
         }
         
     }
@@ -210,7 +237,58 @@ class ItemsDetailsVC: UIViewController, UITextFieldDelegate, UIPickerViewDataSou
             
             imagePicker.dismiss(animated: true, completion: nil)
         }
-  
+    func generateTestData() {
+        generateStoreData()
+        generateItemTypeData()
+        ad.saveContext()
+    }
+    
+    func generateStoreData() {
+        let store = Store(context: context)
+        store.name = "Edeka"
+        let store2 = Store(context: context)
+        store2.name = "Tesla Dealership"
+        let store3 = Store(context: context)
+        store3.name = "BMW carrier"
+        let store4 = Store(context: context)
+        store4.name = "REWE"
+        let store5 = Store(context: context)
+        store5.name = "Amazon"
+        let store6 = Store(context: context)
+        store6.name = "Media Markt"
+    }
+    
+    func generateItemTypeData() {
+        let itemType = ItemType(context: context)
+        itemType.type = "Art"
+        
+        let itemType2 = ItemType(context: context)
+        itemType2.type = "Fashion"
+        
+        let itemType3 = ItemType(context: context)
+        itemType3.type = "Electronics"
+        
+        let itemType4 = ItemType(context: context)
+        itemType4.type = "Entertainment"
+        
+        let itemType5 = ItemType(context: context)
+        itemType5.type = "Home and Garden"
+        
+        let itemType6 = ItemType(context: context)
+        itemType6.type = "Motors"
+        
+        let itemType7 = ItemType(context: context)
+        itemType7.type = "Sporting Goods"
+        
+        let itemType8 = ItemType(context: context)
+        itemType8.type = "Books"
+        
+        let itemType9 = ItemType(context: context)
+        itemType9.type = "Toys"
+        
+        let itemType10 = ItemType(context: context)
+        itemType10.type = "Others"
+    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

@@ -15,6 +15,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet var segment: UISegmentedControl!
     
     var controller: NSFetchedResultsController<Item>!
+
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +38,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func configureCell(cell: ItemCell, indexPath: NSIndexPath) {
         
         let item = controller.object(at: indexPath as IndexPath)
+
         cell.configureCell(item: item)
         
     }
@@ -55,6 +58,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 if let item = sender as? Item {
                     destination.itemToEdit = item
                 }
+
             }
         }
         
@@ -85,9 +89,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func attemptFetch() {
         
         let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+
         let dateSort = NSSortDescriptor(key: "created", ascending: false)
         let priceSort = NSSortDescriptor(key: "price", ascending: true)
         let titleSort = NSSortDescriptor(key: "title", ascending: true)
+        let typeSort = NSSortDescriptor(key: "toItemType", ascending: true)
+
         
         if segment.selectedSegmentIndex == 0 {
             
@@ -100,18 +107,26 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         } else if segment.selectedSegmentIndex == 2 {
             
             fetchRequest.sortDescriptors = [titleSort]
+            
+        }else if segment.selectedSegmentIndex == 3 {
+            
+            fetchRequest.sortDescriptors = [typeSort]
         }
         
         
         let controller = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+
         
         controller.delegate = self
+
+
         
         self.controller = controller
+
         
         do {
             
-            try controller.performFetch()
+            try self.controller.performFetch()
             
         } catch {
             
@@ -119,6 +134,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print("\(error)")
             
         }
+
         
     }
     
