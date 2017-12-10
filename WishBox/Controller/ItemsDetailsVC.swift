@@ -41,6 +41,8 @@ class ItemsDetailsVC: UIViewController, UITextFieldDelegate, UIPickerViewDataSou
         
         getItemTypes()
         generateTestData()
+        generateItemTypeData()
+
         getStores()
         
         if itemToEdit != nil  {
@@ -239,7 +241,7 @@ class ItemsDetailsVC: UIViewController, UITextFieldDelegate, UIPickerViewDataSou
         }
     func generateTestData() {
         generateStoreData()
-        generateItemTypeData()
+//        generateItemTypeData()
         ad.saveContext()
     }
     
